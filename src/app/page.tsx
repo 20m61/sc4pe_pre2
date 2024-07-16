@@ -23,6 +23,35 @@ export default function Home() {
     renderer.setSize(window.innerWidth, window.innerHeight);
     mount.appendChild(renderer.domElement);
 
+    // ランダムメッシュの作成
+    const createRandomMesh = () => {
+      const geometry = new THREE.BufferGeometry();
+      const vertices = [];
+
+      for (let i = 0; i < 1000; i++) {
+        vertices.push(
+          THREE.MathUtils.randFloatSpread(20), // x座標
+          THREE.MathUtils.randFloatSpread(20), // y座標
+          THREE.MathUtils.randFloatSpread(20) // z座標
+        );
+      }
+
+      geometry.setAttribute(
+        'position',
+        new THREE.Float32BufferAttribute(vertices, 3)
+      );
+
+      const material = new THREE.PointsMaterial({ color: 0xffffff });
+      const points = new THREE.Points(geometry, material);
+
+      return points;
+    };
+
+    const randomMesh = createRandomMesh();
+    scene.add(randomMesh);
+
+    camera.position.z = 30;
+
     // リサイズ対応
     const onWindowResize = () => {
       camera.aspect = window.innerWidth / window.innerHeight;
@@ -34,6 +63,8 @@ export default function Home() {
     // アニメーションの設定
     const animate = () => {
       requestAnimationFrame(animate);
+      randomMesh.rotation.x += 0.01;
+      randomMesh.rotation.y += 0.01;
       renderer.render(scene, camera);
     };
     animate();
