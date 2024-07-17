@@ -1,17 +1,23 @@
 import { useState, useEffect } from 'react';
 
-interface SpeechRecognitionEvent {
-  resultIndex: number;
-  results: {
-    isFinal: boolean;
-    [key: number]: {
-      transcript: string;
-    };
-  }[];
-}
+declare global {
+  interface SpeechRecognitionEvent {
+    resultIndex: number;
+    results: {
+      isFinal: boolean;
+      [key: number]: {
+        transcript: string;
+      };
+    }[];
+  }
 
-interface SpeechRecognitionErrorEvent {
-  error: string;
+  interface SpeechRecognitionErrorEvent {
+    error: string;
+  }
+
+  interface Window {
+    webkitSpeechRecognition: any;
+  }
 }
 
 const useSpeechRecognition = () => {
@@ -25,7 +31,7 @@ const useSpeechRecognition = () => {
       return;
     }
 
-    const recognition = new (window as any).webkitSpeechRecognition();
+    const recognition = new window.webkitSpeechRecognition();
     recognition.continuous = true;
     recognition.interimResults = true;
     recognition.lang = 'ja-JP';
