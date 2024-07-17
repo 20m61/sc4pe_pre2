@@ -1,24 +1,5 @@
+// src/hooks/useSpeechRecognition.ts
 import { useState, useEffect } from 'react';
-
-declare global {
-  interface SpeechRecognitionEvent {
-    resultIndex: number;
-    results: {
-      isFinal: boolean;
-      [key: number]: {
-        transcript: string;
-      };
-    }[];
-  }
-
-  interface SpeechRecognitionErrorEvent {
-    error: string;
-  }
-
-  interface Window {
-    webkitSpeechRecognition: any;
-  }
-}
 
 const useSpeechRecognition = () => {
   const [transcript, setTranscript] = useState('');
@@ -31,7 +12,7 @@ const useSpeechRecognition = () => {
       return;
     }
 
-    const recognition = new window.webkitSpeechRecognition();
+    const recognition = new (window as any).webkitSpeechRecognition();
     recognition.continuous = true;
     recognition.interimResults = true;
     recognition.lang = 'ja-JP';
@@ -40,7 +21,7 @@ const useSpeechRecognition = () => {
       setIsListening(true);
     };
 
-    recognition.onresult = (event: SpeechRecognitionEvent) => {
+    recognition.onresult = (event: any) => {
       let interimTranscript = '';
       for (let i = event.resultIndex; i < event.results.length; i++) {
         const transcriptPart = event.results[i][0].transcript;
@@ -53,7 +34,7 @@ const useSpeechRecognition = () => {
       setTranscript(interimTranscript);
     };
 
-    recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
+    recognition.onerror = (event: any) => {
       console.error(event.error);
     };
 
