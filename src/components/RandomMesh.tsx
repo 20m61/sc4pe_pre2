@@ -85,12 +85,9 @@ const RandomMesh: React.FC<RandomMeshProps> = ({ audioData }) => {
       requestAnimationFrame(animate);
 
       // FFTデータに基づいて頂点位置と色を更新
-      const positions = Array.from(
-        randomMesh.geometry.attributes.position.array as Float32Array
-      );
-      const colors = Array.from(
-        randomMesh.geometry.attributes.color.array as Float32Array
-      );
+      const positions = randomMesh.geometry.attributes.position
+        .array as Float32Array;
+      const colors = randomMesh.geometry.attributes.color.array as Float32Array;
       let needsUpdate = false;
 
       for (let i = 0; i < positions.length; i += 3) {
