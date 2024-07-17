@@ -29,7 +29,7 @@ export default function Home() {
           position: 'relative',
         }}
       >
-        <RandomMesh audioData={audioData} />
+        <RandomMesh audioData={Array.from(audioData)} />
         <div
           style={{
             position: 'absolute',
