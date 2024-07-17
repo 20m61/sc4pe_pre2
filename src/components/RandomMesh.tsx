@@ -1,4 +1,3 @@
-// src/components/RandomMesh.tsx
 import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 
@@ -8,7 +7,7 @@ interface RandomMeshProps {
 
 const RandomMesh: React.FC<RandomMeshProps> = ({ audioData }) => {
   const mountRef = useRef<HTMLDivElement>(null);
-  let renderer: THREE.WebGLRenderer;
+  const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
 
   useEffect(() => {
     const mount = mountRef.current;
@@ -24,14 +23,14 @@ const RandomMesh: React.FC<RandomMeshProps> = ({ audioData }) => {
     );
 
     // レンダラーの作成または再利用
-    if (!renderer) {
-      renderer = new THREE.WebGLRenderer({ antialias: true });
-      renderer.setSize(window.innerWidth, window.innerHeight);
+    if (!rendererRef.current) {
+      rendererRef.current = new THREE.WebGLRenderer({ antialias: true });
+      rendererRef.current.setSize(window.innerWidth, window.innerHeight);
     } else {
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      renderer.clear();
+      rendererRef.current.setSize(window.innerWidth, window.innerHeight);
+      rendererRef.current.clear();
     }
-    mount.appendChild(renderer.domElement);
+    mount.appendChild(rendererRef.current.domElement);
 
     // ランダムメッシュの作成
     const createRandomMesh = () => {
@@ -77,7 +76,7 @@ const RandomMesh: React.FC<RandomMeshProps> = ({ audioData }) => {
     const onWindowResize = () => {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
+      rendererRef.current?.setSize(window.innerWidth, window.innerHeight);
     };
     window.addEventListener('resize', onWindowResize, false);
 
@@ -87,11 +86,11 @@ const RandomMesh: React.FC<RandomMeshProps> = ({ audioData }) => {
 
       // FFTデータに基づいて頂点位置と色を更新
       const positions = Array.from(
-        randomMesh.geometry.attributes.position.array
-      ) as number[];
+        randomMesh.geometry.attributes.position.array as Float32Array
+      );
       const colors = Array.from(
-        randomMesh.geometry.attributes.color.array
-      ) as number[];
+        randomMesh.geometry.attributes.color.array as Float32Array
+      );
       let needsUpdate = false;
 
       for (let i = 0; i < positions.length; i += 3) {
@@ -115,7 +114,7 @@ const RandomMesh: React.FC<RandomMeshProps> = ({ audioData }) => {
         randomMesh.geometry.attributes.color.needsUpdate = true;
       }
 
-      renderer.render(scene, camera);
+      rendererRef.current?.render(scene, camera);
     };
     animate();
 
@@ -129,9 +128,9 @@ const RandomMesh: React.FC<RandomMeshProps> = ({ audioData }) => {
       scene.remove(randomMesh);
 
       // レンダラーの破棄
-      renderer.dispose();
+      rendererRef.current?.dispose();
 
-      mount.removeChild(renderer.domElement);
+      mount.removeChild(rendererRef.current!.domElement);
       window.removeEventListener('resize', onWindowResize);
     };
   }, [audioData]);
