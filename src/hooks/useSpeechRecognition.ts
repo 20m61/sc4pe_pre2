@@ -1,5 +1,18 @@
-// src/hooks/useSpeechRecognition.ts
 import { useState, useEffect } from 'react';
+
+interface SpeechRecognitionEvent {
+  resultIndex: number;
+  results: {
+    isFinal: boolean;
+    [key: number]: {
+      transcript: string;
+    };
+  }[];
+}
+
+interface SpeechRecognitionErrorEvent {
+  error: string;
+}
 
 const useSpeechRecognition = () => {
   const [transcript, setTranscript] = useState('');
